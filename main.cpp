@@ -46,17 +46,12 @@ using namespace std;
         consisting of a minimum spanning tree for each connected component
 */
 
-
-
-//HEWWOO
 // i like how we don't know what we're doing
 // me too
 
-// B)
 int main() {
 
 
 
+    return 0;
 }
-
-//PISS
