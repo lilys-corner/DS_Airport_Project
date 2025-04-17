@@ -1,19 +1,32 @@
 #include <iostream>
+#include <fstream>
+#include "Graph.h"
+#include "Vertex.h"
+#include "Graph.cpp"
+
+#include <cstring>
 using namespace std;
+
+// Open in.txt file to read from
+ifstream infile("airports.txt");
+
 
 /*
 1 (LILY):
     Create weighted directed graph G from the provided .csv file
         Can turn this into .txt if it won't accept .csv
         Two weights for each length, Distance and Cost
+DONE!
 
 2 (LILY):
     Find shortest path between origin airport and destination airport
         Provide message if no path
+DONE!
 
 3 (HAILEY):
     Find all shortest paths between origin airports and all airports in the destination state
         Provide message if no path
+
 
 4 (HAILEY):
     Find shortest path between origin airport and destination with stops
@@ -55,12 +68,91 @@ using namespace std;
 
 */
 
-// i like how we don't know what we're doing
-// me too
-
 int main() {
+    if (infile.is_open() == false) {
+        cout << "Error: Unable to open airports.txt" << endl;
+        return 1;
+    }
+
+    // EACH LINE:
+    // Origin_airport, Destination_airport, Origin_city, Destination_city, Distance, Cost
+    string origin_airport, destination_airport, origin_city, destination_city, distance, cost;
+    Graph<string> G;
+    string throw_string;
+
+    // Skip the first line altogether
+    getline(infile, throw_string);
+    int i = 1;
+
+    // Now, the rest is just the data!
+    while (getline(infile, origin_airport, ',')) {
+        // There is content in here. Put it in the weighted graph
+        getline(infile, destination_airport, ',');
+
+        // skip name of city, only take state name
+        getline(infile, throw_string, ' ');
+        //now do ACTUAL origin_city
+        getline(infile, origin_city, '"');
+
+        // skip name of destination city, only take state name
+        getline(infile, throw_string, ' ');
+        // now do ACTUAL destination_city
+        getline(infile, destination_city, '"');
+
+        // read until numbers
+        getline(infile, throw_string, ',');
+
+        // read integers
+        getline(infile, distance, ',');
+        getline(infile, cost);
+
+        Vertex<string> v1(origin_airport, origin_city);
+        Vertex<string> v2(destination_airport, destination_city);
+
+        /*
+        cout << "line! " << i << endl;
+        i++;*/
+        G.insert_vertex(v1);
+
+        G.insert_vertex(v2);
+
+        G.add_edge(v1, v2, stoi(distance), stoi(cost));
+    }
+
+    //G.print();
+    //idk what im doing // real
+    // i think we have to identify the vertices to use? which ones do we need to do
+    //idk the like sample code she gave us just uses the last vertex inserted and the first vertex
+    // Function when you insert a name it spits out the vertex for it-
+    // it produced the the same error still as it would say undefined reference to graph.cpp 136
+    //saying undefined reference to minheap insert and 156 minheap delete
+    // on main? in graph.cpp but i feel like the inserts for the function could be the problem but idk-
+    // like insert_vertex? uhh it points to an heap.insert(edge[i][j])
+    //im gonna cry
+    // can you send a picture of the error
+
+    Vertex<string> start (G.airport_to_vector("ATL"));
+    Vertex<string> end(G.airport_to_vector("MIA"));
+
+    vector<Vertex<string>> state_airports = (G.state_to_vector("FL"));
+    for (auto i : state_airports)
+        cout << i.getData() << " ";
+
+
+    //cout << G.dijkstra_shortest_path(start, end);
+    G.dijkstra_shortest_path(start, end, state_airports, 1);
+    G.dijkstra_shortest_path(start, end,state_airports, 2);
+    /*for (const Vertex<std::string>& airport : state_airports) {
+        G.dijkstra_shortest_path(start, airport,state_airports, 2); // Use mode 2
+        std::cout << "\n"; // Separate output between paths
+    }*/
+
+    //Graph<string> G_u = Graph(G);
+    //G_u.print();
 
 
 
+    //Close the file
+    infile.close();
     return 0;
 }

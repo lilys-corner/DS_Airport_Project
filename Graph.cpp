@@ -8,12 +8,40 @@
 #include <iomanip> //ill ask about it in class
 using namespace std;
 
-#include <queue>
-#include<unistd.h>
 #include <iostream>
-#define INT_MAX 1000
+#define INT_MAX 10000
 
+template <typename T>
+Graph<T>::Graph(const Graph& other) {
+    // Create new graph
+    Graph<T> G_u;
 
+    // Copy vertices
+    for (const Vertex<T>& vertex : other.vertices) {
+        Vertex<T> v1 = vertex;
+        insert_vertex(v1);
+        //vertices[e.src].getData()
+
+        // add_edge(v1, v2, vertex[e.weight], vertex[e.cost]);
+
+        int i = get_vertex_index(v1);
+
+        for (int j = 0; j < other.edges[i].size(); j++) {
+            // Get the destination vertex of the
+            if (other.edges[i][j].dest == NULL)
+                continue;
+
+            insert_vertex(other.vertices[other.edges[i][j].dest]);
+            Vertex<T> v2 = other.vertices[other.edges[i][j].dest];
+            add_edge(v1, v2, other.edges[i][j].weight, other.edges[i][j].cost);
+            if (edges[i][j].src != edges[i][j].dest)
+                add_edge(v2, v1, other.edges[i][j].weight, other.edges[i][j].cost);
+        }
+    }
+}
+
+ //So like i can run my thingie
+// yee no problem
 template <typename T>
 void Graph<T>::insert_vertex(const Vertex<T>& ver) {
     if (get_vertex_index(ver) == -1) {
@@ -21,6 +49,35 @@ void Graph<T>::insert_vertex(const Vertex<T>& ver) {
         std::vector<Edge> tmp;
         edges.push_back(tmp); //insert empty vector to the edges
     }
+}
+
+template <typename T>
+Vertex<T> Graph<T> :: airport_to_vector(const T& airportName) {
+    for (const Vertex<T>& vertex : vertices) {
+        if (vertex.getData() == airportName) {
+            // Match airport name
+            std::cout << "Found vertex!" << std::endl;
+            return vertex;
+        }
+    }
+}
+template <typename T>
+vector<Vertex<T>> Graph<T> :: state_to_vector(const T& stateName) {
+    vector<Vertex<T>> airports_of_state;
+    for (const Vertex<T>& vertex : vertices){
+        if (vertex.getState() == stateName) {
+            // Match airport name
+            airports_of_state.push_back(vertex);
+            std::cout << "Added in " << vertex.getData() << std::endl;
+            //return vertex;
+        }
+    }
+    return airports_of_state;
+}
+
+template <typename T>
+int Graph<T>::if_exists(const Vertex<T>& ver) {
+    return get_vertex_index(ver);
 }
 
 template <typename T>
@@ -35,18 +92,14 @@ int Graph<T>::get_vertex_index(const Vertex<T>& ver) {
 }
 
 template <typename T>
-void Graph<T>::add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int weight) {
+void Graph<T>::add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int weight, int cost) {
     int i1 = get_vertex_index(ver1);
     int i2 = get_vertex_index(ver2);
     if (i1 == -1 || i2 == -1) {
         throw std::string("Add_edge: incorrect vertices");
     }
-    Edge v(i1, i2, weight);
-    Edge v2(i2, i1, weight);
+    Edge v(i1, i2, weight, cost);
     edges[i1].push_back(v);
-    if (i1 != i2) {
-        edges[i2].push_back(v2);
-    }
 }
 
 template <typename T>
@@ -112,6 +165,9 @@ void Graph<T>::print() const {
         std::cout << "{ " << vertices[i].getData() << ": ";
         for(int j = 0; j < edges[i].size(); j++) {
             std::cout << '{' << vertices[edges[i][j].dest].getData() << ", ";
+            //std::cout << vertices[edges[i][j].dest].getState() << ", ";
+            //std::cout << edges[i][j].weight << ", ";
+            //std::cout << edges[i][j].cost << "} ";
             std::cout << edges[i][j].weight << "} ";
         }
         std::cout << " }\n";
@@ -126,50 +182,11 @@ void Graph<T>::DFS(Vertex<T>& ver) {
 }
 
 template <typename T>
-void print_queue(std::queue<Vertex<T>> q) {
-  while (!q.empty())
-  {
-    std::cout << q.front().getData() << " ";
-    q.pop();
-  }
-  std::cout << std::endl;
-}
-
-template <typename T>
-void Graph<T>::BFS(Vertex<T>& ver) {
-    clean_visited();
-
-    int i = get_vertex_index(ver);
-    if (i == -1) {
-        throw std::string("BFS: Vertex is not in the graph");
-    }
-    std::queue<int> q;
-    q.push(i);
-    vertices[i].setVisited(true);
-
-    while (!q.empty()) {
-        int i = q.front();
-        std::cout << vertices[i].getData() << ' ';
-        for(int j = 0; j < edges[i].size(); j++) {
-            int adjacent_ver = edges[i][j].dest;
-            if (vertices[adjacent_ver].getVisited() == false) {
-                vertices[adjacent_ver].setVisited(true);
-                q.push(adjacent_ver);
-            }
-        }
-        q.pop();
-    }
-
-    clean_visited();
-}
-
-template <typename T>
 void Graph<T>::clean_visited() {
     for(Vertex<T>& v : vertices) {
         v.setVisited(false);
     }
 }
-
 
 template <typename T>
 void Graph<T>::DFS_helper(Vertex<T>& ver) {
@@ -199,15 +216,19 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
     clean_visited();
     std::vector<int> distances(vertices.size()); //represents the distances from source to all other vertices
 
-    //set initial distances
+    //set initial distances: 0 for source, very high for everything else initially
     for(int i = 0; i < distances.size(); i++) {
         distances[i] = (i == i_src) ? 0 : INT_MAX;
     }
 
+    // start at source, no visited
     MinHeap<Edge> heap;
     int vertices_visited = 0;
     int cur_ver = i_src;
-
+    std::vector<int> predecessors(vertices.size(),-1);
+    std::vector<int> costs(vertices.size(),  INT_MAX);
+    costs[i_src] =0;
+    cout << vertices.size() << " " << distances.size() << endl;
     // Continue until all vertices have been visited
     while (vertices_visited < vertices.size()) {
         // Set current vertex to cur_ver (current vertex being processed)
@@ -216,6 +237,9 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
         // Iterate through all neighbors (edges) of the current vertex
         for (int j = 0; j < edges[i].size(); j++) {
             // Get the destination vertex of the current edge
+            if (edges[i][j].dest == NULL)
+                continue;
+
             int i_adjacent_ver = edges[i][j].dest;
 
             // Check if the adjacent vertex has not been visited yet
@@ -257,8 +281,48 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
         // Increment the count of visited vertices
         vertices_visited++;
     }
+    if (print_mode == 1) {
+        std::cout << "Shortest route from " << src.getData() <<" -> " <<dest.getData()  << ": ";
+        if (distances[i_dest] == INT_MAX) {
+            std::cout << "None" << endl;
+            return 0;
+        }
+        std::vector<int> path;
+        for (int at = i_dest; at != -1; at = predecessors[at]) {
+            path.insert(path.begin(), at);
+        }
+        //std::cout<<"Shortest Path Cost: " << costs[i_dest] << std::endl;
+        //std::cout << "Shortest Path: ";
+        for (int v : path) {
+            std::cout << vertices[v].getData() << " -> ";
+        }
+        std::cout << "\b\b\b\b. The length is " << distances[i_dest] <<". The cost is " << costs[i_dest] << ".\n";
+    }
+    else if (print_mode == 2) {
+        std::cout << "Shortest paths from " << src.getData() << " to " << dest.getState() << " state airports are:\n\n";
+        std::cout << setw(20) << std::left<< "Path"  << setw(10) << "Length" << "Cost\n";
 
+        for (const Vertex<T>& airport : state_airport) {
+            int i_dest = get_vertex_index(airport);
+            if (i_dest == -1 || distances[i_dest] == INT_MAX) continue; // Skip unreachable airports
 
+            std::vector<int> path;
+            for (int at = i_dest; at != -1; at = predecessors[at]) {
+                path.insert(path.begin(), at);
+            }
+            std::string path_str = src.getData() + " -> ";
+            //std::cout << std::setw(30) << std::left << src.getData();
+            for (int i = 1; i<path.size(); i++) {
+                path_str += vertices[path[i]].getData();
+                    if (i <path.size()-1) {
+                        path_str+= " -> ";
+                    }
+            }
+
+            std::cout <<std:: left<< std::setw(20) << path_str
+                << std::setw(10) << distances[i_dest]
+                      << std::setw(10) << costs[i_dest] << std::endl;}
+    }
     clean_visited();
 
     return distances[i_dest];

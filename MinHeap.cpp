@@ -12,6 +12,7 @@ void MinHeap<T>::insert(const T& val) {
         n = (n - 1) / 2; //make cur index equal to the parent index
     }
 }
+//
 
 template<typename T>
 void MinHeap<T>::print() const {
