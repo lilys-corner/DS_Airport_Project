@@ -10,7 +10,7 @@ public:
     void insert(const T& val);
     void print() const;
     T delete_min();
-
+    bool is_empty() const;
 private:
     std::vector<T> data;
     void swap(T& v1, T& v2) {

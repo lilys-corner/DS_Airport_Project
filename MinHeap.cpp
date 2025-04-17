@@ -4,6 +4,7 @@
 template<typename T>
 void MinHeap<T>::insert(const T& val) {
     data.push_back(val);
+
     int n = data.size() - 1; //index of the last node
     //percolate UP
     while (data[n] < data[(n - 1) / 2]) {
@@ -77,7 +78,10 @@ void MinHeap<T>::percolate_down(int i) {
     } while(1);
 
 }
-
+template <typename T>
+bool MinHeap<T>::is_empty() const {
+    return data.empty(); // Corrected to check `data`
+}
 template<typename T>
 int MinHeap<T>::min_index(int i1, int i2) const {
     if (i1 >= data.size() || i2 >= data.size() || i1 < 0 || i2 < 0) {

@@ -1,6 +1,12 @@
 #include "Graph.h"
 #include "MinHeap.h"
 #include "MinHeap.cpp"
+#include "Edge.h"
+#include "Vertex.h"
+#include <vector>
+#include <queue>
+#include <iomanip> //ill ask about it in class
+using namespace std;
 
 #include <queue>
 #include<unistd.h>
@@ -125,7 +131,7 @@ void Graph<T>::DFS_helper(Vertex<T>& ver) {
 }
 
 template<typename T>
-int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest) {
+int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest, const vector<Vertex<T>>& state_airport, const int print_mode) {
     int i_src = get_vertex_index(src);
     int i_dest = get_vertex_index(dest);
 
@@ -162,26 +168,31 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
 
                 // Calculate the new distance from the source to the adjacent vertex through the current vertex
                 int dist_from_source = distances[i] + edges[i][j].weight;
-
+                int new_cost = costs[i] + edges[i][j].cost;
                 // If this new distance is shorter than the previously known distance to the adjacent vertex, update it
                 if (dist_from_source < distances[i_adjacent_ver]) {
                     // Update the shortest distance to the adjacent vertex
                     distances[i_adjacent_ver] = dist_from_source;
-
+                    costs[i_adjacent_ver] = new_cost;
+                    predecessors[i_adjacent_ver] = i;
                     // Optional debugging: print all the distances at each step to track the changes
-                    for (int i : distances) {
+                    /*for (int i : distances) {
                         std::cout << i << ' ';
                     }
-                    std::cout << '\n';
+                    std::cout << '\n';*/
                 }
             }
         }
+        if (heap.is_empty()) { // Check if heap is empty before deleting min
 
+            break; // Exit loop gracefully
+        }
         // After exploring all neighbors, get the edge with the smallest weight from the heap
         Edge e = heap.delete_min();
-
+        /* std::cout << "Processing edge: " << vertices[e.src].getData() << " -> "
+              << vertices[e.dest].getData() << " (Weight: " << e.weight << ")" << std::endl;
         // Update the current vertex to the destination of the edge with the smallest weight
-        cur_ver = e.dest;
+        */cur_ver = e.dest;
 
         // Mark the current vertex as visited
         vertices[i].setVisited(true);
