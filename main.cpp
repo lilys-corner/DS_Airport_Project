@@ -39,11 +39,20 @@ using namespace std;
         Output content of MST and total cost (see sample output)
         If G_u is disconnected, provide message it cannot be formed
 
+    //the basics of the algorithm
+
+
 8 (HAYLEY):
     Create a Minimal Spanning Tree (MST) w/ Kruskal's algorithm on G_u
         Output content of MST and total cost (see sample output)
         If G_u is disconnected, algorithm provides minimum spanning forest
         consisting of a minimum spanning tree for each connected component
+
+    //the basics of the algorithm cause idk what i'm doing
+        greedy approach - each iteration it finds an edge which has least
+        weight and adds it ot the growing spanning tree
+
+
 */
 
 // i like how we don't know what we're doing

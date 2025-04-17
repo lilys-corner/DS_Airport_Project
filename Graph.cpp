@@ -50,6 +50,63 @@ void Graph<T>::add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int weight
 }
 
 template <typename T>
+void Graph<T>::primMST(int V) {
+//creates a MST using Prim's algorithm given an unsorted Graph
+    bool inMST [INT_MAX] = {false};
+    int total_weight = 0;
+
+    // priority queue (min-heap): {weight, vertex}
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+
+
+    /*code from class
+// adjacency list: each element is {neighbor, weight}
+vector<pair<int, int>> adj[MAX_VERTICES];
+
+void primMST(int V) {
+    bool inMST[MAX_VERTICES] = {false};
+    int total_weight = 0;
+
+    // priority queue (min-heap): {weight, vertex}
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+
+    // Start from vertex 0
+    pq.push({0, 0});
+
+    cout << "Edges in MST:\n";
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        int wt = pq.top().first;
+        pq.pop();
+
+        // Skip if already included in MST
+        if (inMST[u])
+            continue;
+
+        inMST[u] = true;
+        total_weight += wt;
+
+        // Don't print the starting node (0) with weight 0
+        if (wt != 0)
+            cout << "Added vertex " << u << " with edge weight " << wt << endl;
+
+        // Go through all neighbors
+        for (int i = 0; i < adj[u].size(); i++) {
+            int v = adj[u][i].first;
+            int weight = adj[u][i].second;
+            if (!inMST[v])
+                pq.push({weight, v});
+        }
+    }
+
+    cout << "Total weight of MST: " << total_weight << endl;
+}
+
+     */
+}
+
+template <typename T>
 void Graph<T>::print() const {
     for (int i = 0; i < vertices.size(); i++) {
         std::cout << "{ " << vertices[i].getData() << ": ";
