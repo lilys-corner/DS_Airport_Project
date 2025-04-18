@@ -13,7 +13,7 @@ public:
     void insert_vertex(const Vertex<T>& ver);
     void add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int weight, int cost); //connect ver1 with ver2
 
-    void primMST(int V); //creates a MST using Prim's algorithm given an unsorted GU
+    Graph<T> primMST(); //creates a MST using Prim's algorithm given an unsorted GU
 
     void print() const;
 
