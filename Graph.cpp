@@ -100,63 +100,6 @@ void Graph<T>::add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int weight
 }
 
 template <typename T>
-void Graph<T>::primMST(int V) {
-//creates a MST using Prim's algorithm given an unsorted Graph
-    bool inMST [INT_MAX] = {false};
-    int total_weight = 0;
-
-    // priority queue (min-heap): {weight, vertex}
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-
-
-    /*code from class
-// adjacency list: each element is {neighbor, weight}
-vector<pair<int, int>> adj[MAX_VERTICES];
-
-void primMST(int V) {
-    bool inMST[MAX_VERTICES] = {false};
-    int total_weight = 0;
-
-    // priority queue (min-heap): {weight, vertex}
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-
-    // Start from vertex 0
-    pq.push({0, 0});
-
-    cout << "Edges in MST:\n";
-
-    while (!pq.empty()) {
-        int u = pq.top().second;
-        int wt = pq.top().first;
-        pq.pop();
-
-        // Skip if already included in MST
-        if (inMST[u])
-            continue;
-
-        inMST[u] = true;
-        total_weight += wt;
-
-        // Don't print the starting node (0) with weight 0
-        if (wt != 0)
-            cout << "Added vertex " << u << " with edge weight " << wt << endl;
-
-        // Go through all neighbors
-        for (int i = 0; i < adj[u].size(); i++) {
-            int v = adj[u][i].first;
-            int weight = adj[u][i].second;
-            if (!inMST[v])
-                pq.push({weight, v});
-        }
-    }
-
-    cout << "Total weight of MST: " << total_weight << endl;
-}
-
-     */
-}
-
-template <typename T>
 void Graph<T>::print() const {
     for (int i = 0; i < vertices.size(); i++) {
         std::cout << "{ " << vertices[i].getData() << ": ";
@@ -323,4 +266,104 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
     clean_visited();
 
     return distances[i_dest];
+}
+
+
+//implementation for prims algorithm mst
+//takes an unsorted graph and returns a mst
+Graph<T> Graph<T>::primMST() {
+    Graph<T> mst;
+
+    int n = vertices.size();
+    if (n == 0) {
+        std::cout << "Graph is empty, MST can not be formed.\n";
+        return mst;
+    }
+
+    int* key = new int[n];       // Minimum cost to reach each vertex
+    bool* inMST = new bool[n];   // Visited flag
+    int* parent = new int[n];    // To reconstruct MST edges
+
+    for (int i = 0; i < n; i++) {
+        key[i] = INT_MAX;
+        inMST[i] = false;
+        parent[i] = -1;
+    }
+
+    key[0] = 0;
+
+    for (int count = 0; count < n - 1; count++) {
+        // Find the vertex with the minimum key not in MST
+        int minKey = INT_MAX;
+        int u = -1;
+
+        for (int v = 0; v < n; v++) {
+            if (!inMST[v] && key[v] < minKey) {
+                minKey = key[v];
+                u = v;
+            }
+        }
+
+        if (u == -1) break; // Graph might be disconnected
+
+        inMST[u] = true;
+
+        // Update keys for neighbors of u
+        for (int i = 0; i < edges[u].size(); i++) {
+            int v = edges[u][i].dest;
+            int cost = edges[u][i].cost;
+
+            if (!inMST[v] && cost < key[v]) {
+                key[v] = cost;
+                parent[v] = u;
+            }
+        }
+    }
+
+    // Build MST graph
+    int total_cost = 0;
+    for (int i = 0; i < n; i++) {
+        mst.insert_vertex(vertices[i]);
+    }
+
+    std::cout << "Minimal Spanning Tree (Prim's algorithm):\n";
+    std::cout << std::left << std::setw(20) << "Edge" << "Weight\n";
+
+    for (int i = 1; i < n; i++) {
+        if (parent[i] != -1) {
+            const Vertex<T>& from = vertices[parent[i]];
+            const Vertex<T>& to = vertices[i];
+            int cost = key[i];
+
+            mst.add_edge(from, to, 0, cost);  // Undirected
+            mst.add_edge(to, from, 0, cost);
+
+            std::string edgeLabel = from.getData() + " - " + to.getData();
+            std::cout << std::left << std::setw(20) << edgeLabel << cost << "\n";
+
+            total_cost += cost;
+        }
+    }
+
+    std::cout << "\nTotal Cost of MST: " << total_cost << "\n";
+
+    // Check if graph is disconnected and notify that mst is incomplete
+    bool disconnected = false;
+    for (int i = 0; i < n; i++) {
+        if (!inMST[i]) {
+            disconnected = true;
+            break;
+        }
+    }
+
+    if (disconnected) {
+        std::cout << "\nNote: The graph is disconnected. MST could not include all vertices.\n";
+    }
+
+    // Free memory
+    delete[] key;
+    delete[] inMST;
+    delete[] parent;
+
+    return mst;
 }
