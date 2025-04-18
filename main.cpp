@@ -51,9 +51,7 @@ DONE!
     Create a Minimal Spanning Tree (MST) w/ Prim's algorithm on G_u
         Output content of MST and total cost (see sample output)
         If G_u is disconnected, provide message it cannot be formed
-
-    //the basics of the algorithm
-
+DONE!
 
 8 (HAYLEY):
     Create a Minimal Spanning Tree (MST) w/ Kruskal's algorithm on G_u
@@ -61,9 +59,7 @@ DONE!
         If G_u is disconnected, algorithm provides minimum spanning forest
         consisting of a minimum spanning tree for each connected component
 
-    //the basics of the algorithm cause idk what i'm doing
-        greedy approach - each iteration it finds an edge which has least
-        weight and adds it ot the growing spanning tree
+    
 
 
 */
@@ -140,6 +136,8 @@ int main() {
     //Graph<string> G_u = Graph(G);
     //G_u.print();
 
+    //apply prims algorithm to the unsorted G_u and displays the entire mst
+    //Graph<string> MST = G_u.primMST();
 
 
     //Close the file
