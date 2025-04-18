@@ -18,25 +18,21 @@ Graph<T>::Graph(const Graph& other) {
     Graph<T> G_u;
 
     // Copy vertices
-    for (const Vertex<T>& vertex : other.vertices) {
-        Vertex<T> v1 = vertex;
+    for (int k = 0; k < other.vertices.size(); k++) {
+        // Insert the current vertex
+        Vertex<T> v1 = other.vertices[k];
         insert_vertex(v1);
-        //vertices[e.src].getData()
 
-        // add_edge(v1, v2, vertex[e.weight], vertex[e.cost]);
+        // For each edge, execute
+        for (int j = 0; j < other.edges[k].size(); j++) {
 
-        int i = get_vertex_index(v1);
+            // Insert other vertex based on the edge
+            Vertex<T> v2 = other.vertices[other.edges[k][j].dest];
+            insert_vertex(v2);
 
-        for (int j = 0; j < other.edges[i].size(); j++) {
-            // Get the destination vertex of the
-            if (other.edges[i][j].dest == NULL)
-                continue;
-
-            insert_vertex(other.vertices[other.edges[i][j].dest]);
-            Vertex<T> v2 = other.vertices[other.edges[i][j].dest];
-            add_edge(v1, v2, other.edges[i][j].weight, other.edges[i][j].cost);
-            if (edges[i][j].src != edges[i][j].dest)
-                add_edge(v2, v1, other.edges[i][j].weight, other.edges[i][j].cost);
+            // Add edges for both
+            add_edge(v1, v2, other.edges[k][j].weight, other.edges[k][j].cost);
+            add_edge(v2, v1, other.edges[k][j].weight, other.edges[k][j].cost);
         }
     }
 }
