@@ -276,7 +276,7 @@ Graph<T> Graph<T>::primMST() {
 
     int n = vertices.size();
     if (n == 0) {
-        std::cout << "Graph is empty, MST can not be formed.\n";
+        cout << "Graph is empty, MST can not be formed.\n";
         return mst;
     }
 
@@ -326,8 +326,8 @@ Graph<T> Graph<T>::primMST() {
         mst.insert_vertex(vertices[i]);
     }
 
-    std::cout << "Minimal Spanning Tree (Prim's algorithm):\n";
-    std::cout << std::left << std::setw(20) << "Edge" << "Weight\n";
+    cout << "Minimal Spanning Tree (Prim's algorithm):\n";
+    cout << left << setw(20) << "Edge" << "Weight\n";
 
     for (int i = 1; i < n; i++) {
         if (parent[i] != -1) {
@@ -338,14 +338,14 @@ Graph<T> Graph<T>::primMST() {
             mst.add_edge(from, to, 0, cost);  // Undirected
             mst.add_edge(to, from, 0, cost);
 
-            std::string edgeLabel = from.getData() + " - " + to.getData();
-            std::cout << std::left << std::setw(20) << edgeLabel << cost << "\n";
+            string edgeLabel = from.getData() + " - " + to.getData();
+            cout << left << setw(20) << edgeLabel << cost << "\n";
 
             total_cost += cost;
         }
     }
 
-    std::cout << "\nTotal Cost of MST: " << total_cost << "\n";
+    cout << "\nTotal Cost of MST: " << total_cost << "\n";
 
     // Check if graph is disconnected and notify that mst is incomplete
     bool disconnected = false;
@@ -357,7 +357,7 @@ Graph<T> Graph<T>::primMST() {
     }
 
     if (disconnected) {
-        std::cout << "\nNote: The graph is disconnected. MST could not include all vertices.\n";
+        cout << "\nNote: The graph is disconnected. MST could not include all vertices.\n";
     }
 
     // Free memory
@@ -367,3 +367,4 @@ Graph<T> Graph<T>::primMST() {
 
     return mst;
 }
+
