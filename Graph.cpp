@@ -271,6 +271,7 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
 
 //implementation for prims algorithm mst
 //takes an unsorted graph and returns a mst
+template<typename T>
 Graph<T> Graph<T>::primMST() {
     Graph<T> mst;
 
