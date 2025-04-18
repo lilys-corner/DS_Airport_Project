@@ -120,28 +120,18 @@ int main() {
     }
 
     //G.print();
-    //idk what im doing // real
-    // i think we have to identify the vertices to use? which ones do we need to do
-    //idk the like sample code she gave us just uses the last vertex inserted and the first vertex
-    // Function when you insert a name it spits out the vertex for it-
-    // it produced the the same error still as it would say undefined reference to graph.cpp 136
-    //saying undefined reference to minheap insert and 156 minheap delete
-    // on main? in graph.cpp but i feel like the inserts for the function could be the problem but idk-
-    // like insert_vertex? uhh it points to an heap.insert(edge[i][j])
-    //im gonna cry
-    // can you send a picture of the error
 
-    Vertex<string> start (G.airport_to_vector("ATL"));
+    Vertex<string> start (G.airport_to_vector("ACT"));
     Vertex<string> end(G.airport_to_vector("MIA"));
-
-    vector<Vertex<string>> state_airports = (G.state_to_vector("FL"));
-    for (auto i : state_airports)
-        cout << i.getData() << " ";
+    string stateName = "TX";
+    vector<Vertex<string>> state_airports = (G.state_to_vector(stateName));
+    //for (auto i : state_airports)
+     //   cout << i.getData() << " ";
 
 
     //cout << G.dijkstra_shortest_path(start, end);
-    G.dijkstra_shortest_path(start, end, state_airports, 1);
-    G.dijkstra_shortest_path(start, end,state_airports, 2);
+    G.dijkstra_shortest_path(start, end, state_airports, stateName, 1);
+    G.dijkstra_shortest_path(start, end,state_airports, stateName, 2);
     /*for (const Vertex<std::string>& airport : state_airports) {
         G.dijkstra_shortest_path(start, airport,state_airports, 2); // Use mode 2
         std::cout << "\n"; // Separate output between paths

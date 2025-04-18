@@ -3,7 +3,7 @@
 #include "Vertex.h"
 #include "Edge.h"
 #include <vector>
-
+#include <string>
 template <typename T>
 class Graph {
 public:
@@ -18,7 +18,7 @@ public:
     void print() const;
 
     void DFS(Vertex<T>& ver);
-    int dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest, const std::vector<Vertex<T>>& state_airport, const int print_mode);
+    int dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest, const std::vector<Vertex<T>>& state_airport, const std::string& stateName, const int& print_mode);
 
     int if_exists(const Vertex<T>& ver);
     Vertex<T> airport_to_vector(const T& airportName);

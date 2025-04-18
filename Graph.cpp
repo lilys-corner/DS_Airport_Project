@@ -6,6 +6,7 @@
 #include <vector>
 #include <queue>
 #include <iomanip> //ill ask about it in class
+#include <string>
 using namespace std;
 
 #include <iostream>
@@ -56,7 +57,7 @@ Vertex<T> Graph<T> :: airport_to_vector(const T& airportName) {
     for (const Vertex<T>& vertex : vertices) {
         if (vertex.getData() == airportName) {
             // Match airport name
-            std::cout << "Found vertex!" << std::endl;
+           // std::cout << "Found vertex!" << std::endl;
             return vertex;
         }
     }
@@ -68,7 +69,7 @@ vector<Vertex<T>> Graph<T> :: state_to_vector(const T& stateName) {
         if (vertex.getState() == stateName) {
             // Match airport name
             airports_of_state.push_back(vertex);
-            std::cout << "Added in " << vertex.getData() << std::endl;
+            //std::cout << "Added in " << vertex.getData() << std::endl;
             //return vertex;
         }
     }
@@ -205,7 +206,7 @@ void Graph<T>::DFS_helper(Vertex<T>& ver) {
 }
 
 template<typename T>
-int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest, const vector<Vertex<T>>& state_airport, const int print_mode) {
+int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest, const vector<Vertex<T>>& state_airport, const std::string& stateName, const int& print_mode) {
     int i_src = get_vertex_index(src);
     int i_dest = get_vertex_index(dest);
 
@@ -228,7 +229,7 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
     std::vector<int> predecessors(vertices.size(),-1);
     std::vector<int> costs(vertices.size(),  INT_MAX);
     costs[i_src] =0;
-    cout << vertices.size() << " " << distances.size() << endl;
+    //cout << vertices.size() << " " << distances.size() << endl;
     // Continue until all vertices have been visited
     while (vertices_visited < vertices.size()) {
         // Set current vertex to cur_ver (current vertex being processed)
@@ -299,7 +300,7 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
         std::cout << "\b\b\b\b. The length is " << distances[i_dest] <<". The cost is " << costs[i_dest] << ".\n";
     }
     else if (print_mode == 2) {
-        std::cout << "Shortest paths from " << src.getData() << " to " << dest.getState() << " state airports are:\n\n";
+        std::cout << "Shortest paths from " << src.getData() << " to " << stateName << " state airports are:\n\n";
         std::cout << setw(20) << std::left<< "Path"  << setw(10) << "Length" << "Cost\n";
 
         for (const Vertex<T>& airport : state_airport) {
