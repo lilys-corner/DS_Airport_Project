@@ -12,7 +12,7 @@ ifstream infile("airports.txt");
 
 
 /*
-1 (LILY):
+1 (HAILEY):
     Create weighted directed graph G from the provided .csv file
         Can turn this into .txt if it won't accept .csv
         Two weights for each length, Distance and Cost
@@ -23,10 +23,10 @@ DONE!
         Provide message if no path
 DONE!
 
-3 (HAILEY):
-    Find all shortest paths between origin airports and all airports in the destination state
+3 (LILY):
+    Find all shortest paths between a given origin airport and all airports in the destination state
         Provide message if no path
-
+DONE!
 
 4 (HAILEY):
     Find shortest path between origin airport and destination with stops
@@ -137,10 +137,19 @@ int main() {
         std::cout << "\n"; // Separate output between paths
     }*/
 
+    //G.shortest_path_stop(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"), 3);
+
+
+    G.count_direct_flights();
+
     //Graph<string> G_u = Graph(G);
     //G_u.print();
 
+    //apply algorithms to the unsorted G_u and displays the entire mst
 
+    //Graph<string> MST = G_u.primMST();
+
+    //Graph<string> kruskalTree = G_u.kruskalMST();
 
     //Close the file
     infile.close();

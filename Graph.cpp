@@ -7,6 +7,7 @@
 #include <queue>
 #include <iomanip> //ill ask about it in class
 #include <string>
+#include <algorithm>
 using namespace std;
 
 #include <iostream>
@@ -98,7 +99,7 @@ void Graph<T>::add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int weight
     Edge v(i1, i2, weight, cost);
     edges[i1].push_back(v);
 }
-
+/*
 template <typename T>
 void Graph<T>::primMST(int V) {
 //creates a MST using Prim's algorithm given an unsorted Graph
@@ -107,7 +108,7 @@ void Graph<T>::primMST(int V) {
 
     // priority queue (min-heap): {weight, vertex}
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-
+*/
 
     /*code from class
 // adjacency list: each element is {neighbor, weight}
@@ -154,7 +155,7 @@ void primMST(int V) {
 }
 
      */
-}
+//}
 
 template <typename T>
 void Graph<T>::print() const {
@@ -323,4 +324,322 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
     clean_visited();
 
     return distances[i_dest];
+}
+
+template <typename T>
+void Graph<T>::shortest_path_stops(const Vertex<T>& src, const Vertex<T>& dest, int stops) {
+    // path = stops + 2
+    int i_src = get_vertex_index(src);
+    int i_dest = get_vertex_index(dest);
+
+    if (i_src == -1 || i_dest == -1) {
+        throw std::string("Shortest path: incorrect vertices");
+    }
+
+    if (stops < 0) {
+        cout << "Error: There cannot be negative stops" << endl;
+        return;
+    }
+
+    clean_visited();
+    std::vector<int> distances(vertices.size()); //represents the distances from source to all other vertices
+
+    //set initial distances: 0 for source, very high for everything else initially
+    for(int i = 0; i < distances.size(); i++) {
+        distances[i] = (i == i_src) ? 0 : INT_MAX;
+    }
+
+    // start at source, no visited
+    MinHeap<Edge> heap;
+    int vertices_visited = 0;
+    int cur_ver = i_src;
+
+    std::vector<int> predecessors(vertices.size(),-1);
+    std::vector<int> costs(vertices.size(),  INT_MAX);
+    costs[i_src] = 0;
+
+    while (vertices_visited < vertices.size()) {
+        // Set current vertex to cur_ver (current vertex being processed)
+        int i = cur_ver;
+
+        // Iterate through all neighbors (edges) of the current vertex
+        for (int j = 0; j < edges[i].size(); j++) {
+            // Get the destination vertex of the current edge
+            if (edges[i][j].dest == NULL)
+                continue;
+
+            int i_adjacent_ver = edges[i][j].dest;
+
+            // Check if the adjacent vertex has not been visited yet
+            if (vertices[i_adjacent_ver].getVisited() == false) {
+                // Insert the edge into the min-heap (for processing later in Dijkstra's algorithm)
+                heap.insert(edges[i][j]);
+
+                // disregard distance if not stops
+
+                // Calculate the new distance from the source to the adjacent vertex through the current vertex
+                int dist_from_source = distances[i] + edges[i][j].weight;
+                int new_cost = costs[i] + edges[i][j].cost;
+
+                // If this new distance is shorter than the previously known distance to the adjacent vertex, update it
+                if (dist_from_source < distances[i_adjacent_ver]) {
+
+                    // Update the shortest distance to the adjacent vertex
+                    distances[i_adjacent_ver] = dist_from_source;
+                    costs[i_adjacent_ver] = new_cost;
+                    predecessors[i_adjacent_ver] = i;
+                }
+            }
+        }
+        if (heap.is_empty()) { // Check if heap is empty before deleting min
+
+            break; // Exit loop gracefully
+        }
+        // After exploring all neighbors, get the edge with the smallest weight from the heap
+        Edge e = heap.delete_min();
+
+        cur_ver = e.dest;
+
+        // Mark the current vertex as visited
+        vertices[i].setVisited(true);
+
+        // Increment the count of visited vertices
+        vertices_visited++;
+    }
+
+}
+
+//implementation for prims algorithm mst
+//takes an unsorted graph and returns a mst
+template<typename T>
+Graph<T> Graph<T>::primMST() {
+    Graph<T> mst;
+
+    int n = vertices.size();
+    if (n == 0) {
+        cout << "Graph is empty, MST can not be formed.\n";
+        return mst;
+    }
+
+    int* key = new int[n];       // Minimum cost to reach each vertex
+    bool* inMST = new bool[n];   // Visited flag
+    int* parent = new int[n];    // To reconstruct MST edges
+
+    for (int i = 0; i < n; i++) {
+        key[i] = INT_MAX;
+        inMST[i] = false;
+        parent[i] = -1;
+    }
+
+    key[0] = 0;
+
+    for (int count = 0; count < n - 1; count++) {
+        // Find the vertex with the minimum key not in MST
+        int minKey = INT_MAX;
+        int u = -1;
+
+        for (int v = 0; v < n; v++) {
+            if (!inMST[v] && key[v] < minKey) {
+                minKey = key[v];
+                u = v;
+            }
+        }
+
+        if (u == -1) break; // Graph might be disconnected
+
+        inMST[u] = true;
+
+        // Update keys for neighbors of u
+        for (int i = 0; i < edges[u].size(); i++) {
+            int v = edges[u][i].dest;
+            int cost = edges[u][i].cost;
+
+            if (!inMST[v] && cost < key[v]) {
+                key[v] = cost;
+                parent[v] = u;
+            }
+        }
+    }
+
+    // Build MST graph
+    int total_cost = 0;
+    for (int i = 0; i < n; i++) {
+        mst.insert_vertex(vertices[i]);
+    }
+
+    cout << "Minimal Spanning Tree (Prim's algorithm):\n";
+    cout << left << setw(20) << "Edge" << "Weight\n";
+
+    for (int i = 1; i < n; i++) {
+        if (parent[i] != -1) {
+            const Vertex<T>& from = vertices[parent[i]];
+            const Vertex<T>& to = vertices[i];
+            int cost = key[i];
+
+            mst.add_edge(from, to, 0, cost);  // Undirected
+            mst.add_edge(to, from, 0, cost);
+
+            string edgeLabel = from.getData() + " - " + to.getData();
+            cout << left << setw(20) << edgeLabel << cost << "\n";
+
+            total_cost += cost;
+        }
+    }
+
+    cout << "\nTotal Cost of MST: " << total_cost << "\n";
+
+    // Check if graph is disconnected and notify that mst is incomplete
+    bool disconnected = false;
+    for (int i = 0; i < n; i++) {
+        if (!inMST[i]) {
+            disconnected = true;
+            break;
+        }
+    }
+
+    if (disconnected) {
+        cout << "\nNote: The graph is disconnected. MST could not include all vertices.\n";
+    }
+
+    // Free memory
+    delete[] key;
+    delete[] inMST;
+    delete[] parent;
+
+    return mst;
+}
+
+template <typename T>
+void Graph<T>::count_direct_flights() {
+    std::vector<int> inbound(vertices.size(), 0);
+    std::vector<int> outbound(vertices.size(), 0);
+
+    int max_connections = 0;
+
+    // Count inbound and outbound flights
+    for (int i = 0; i < vertices.size(); i++) {
+        outbound[i] = edges[i].size();
+        for (const Edge& edge : edges[i]) {
+            inbound[edge.dest]++;
+        }
+        max_connections = std::max(max_connections, inbound[i] + outbound[i]); // Track highest count
+    }
+
+    std::cout << std::setw(20) << std::left << "Airport"
+              << std::setw(10) << "Connections\n";
+
+    // Iteratively print airports with decreasing total connections
+    for (int total = max_connections; total >= 0; total--) {
+        for (int i = 0; i < vertices.size(); i++) {
+            if (inbound[i] + outbound[i] == total) {
+                std::cout << std::setw(20) << std::left << vertices[i].getData()
+                          << std::setw(10) << total << std::endl;
+            }
+        }
+    }
+}
+
+//takes an unsorted graph and returns either a mst or a minimum spanning forest if graph is disconnected
+template <typename T>
+Graph<T> Graph<T>::kruskalMST() {
+    Graph<T> mst;
+
+    int n = vertices.size();
+    if (n == 0) {
+        std::cout << "Graph is empty. No MST can be formed.\n";
+        return mst;
+    }
+
+    // Disjoint-set (Union-Find)
+    int* parent = new int[n];
+    for (int i = 0; i < n; i++) parent[i] = i;
+
+    auto find = [&](int x) {
+        while (x != parent[x]) x = parent[x];
+        return x;
+    };
+
+    auto union_sets = [&](int x, int y) {
+        int root_x = find(x);
+        int root_y = find(y);
+        if (root_x != root_y) parent[root_y] = root_x;
+    };
+
+    // Step 1: collect all unique edges
+    vector<Edge> all_edges;
+    for (int i = 0; i < n; i++) {
+        for (const Edge& e : edges[i]) {
+            if (i < e.dest) {
+                all_edges.push_back(e);
+            }
+        }
+    }
+
+    // Step 2: sort edges by cost (selection sort)
+    for (int i = 0; i < all_edges.size() - 1; i++) {
+        int min_idx = i;
+        for (int j = i + 1; j < all_edges.size(); j++) {
+            if (all_edges[j].cost < all_edges[min_idx].cost) {
+                min_idx = j;
+            }
+        }
+        if (min_idx != i) {
+            Edge temp = all_edges[i];
+            all_edges[i] = all_edges[min_idx];
+            all_edges[min_idx] = temp;
+        }
+    }
+
+    // Step 3: add all vertices to MST
+    for (int i = 0; i < n; i++) {
+        mst.insert_vertex(vertices[i]);
+    }
+
+    // Group MST edges by root
+    vector<vector<Edge>> forest(n);  // forest[root] holds that component's edges
+    int total_cost = 0;
+
+    for (const Edge& e : all_edges) {
+        int u = e.src;
+        int v = e.dest;
+        int root_u = find(u);
+        int root_v = find(v);
+
+        if (root_u != root_v) {
+            union_sets(u, v);
+            int root = find(u);
+
+            // Add to forest and MST
+            forest[root].push_back(e);
+            mst.add_edge(vertices[u], vertices[v], 0, e.cost);
+            mst.add_edge(vertices[v], vertices[u], 0, e.cost);
+            total_cost += e.cost;
+        }
+    }
+
+    // Display the forest (multiple trees)
+    std::cout << "Minimum Spanning Forest:\n";
+    std::cout << std::left << std::setw(20) << "Edge" << "Weight\n";
+
+    bool printed[n]; // avoid printing the same component twice
+    for (int i = 0; i < n; i++) printed[i] = false;
+
+    for (int i = 0; i < n; i++) {
+        int root = find(i);
+        if (!printed[root] && !forest[root].empty()) {
+            printed[root] = true;
+
+            for (const Edge& e : forest[root]) {
+                std::string edgeLabel = vertices[e.src].getData() + " - " + vertices[e.dest].getData();
+                std::cout << std::left << std::setw(20) << edgeLabel << e.cost << "\n";
+            }
+
+            std::cout << "------------------------\n";
+        }
+    }
+
+    std::cout << "Total Cost of MST: " << total_cost << "\n";
+
+    delete[] parent;
+    return mst;
 }
