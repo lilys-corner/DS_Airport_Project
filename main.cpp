@@ -53,7 +53,7 @@ DONE!
         If G_u is disconnected, provide message it cannot be formed
 
     //the basics of the algorithm
-
+Done!
 
 8 (HAYLEY):
     Create a Minimal Spanning Tree (MST) w/ Kruskal's algorithm on G_u
@@ -64,7 +64,7 @@ DONE!
     //the basics of the algorithm cause idk what i'm doing
         greedy approach - each iteration it finds an edge which has least
         weight and adds it ot the growing spanning tree
-
+Done!
 
 */
 
