@@ -240,12 +240,13 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
     //Print shortest path to all the destination state's airports
     else if (print_mode == 2) {
         std::cout << "Shortest paths from " << src.getData() << " to " << stateName << " state airports are:\n\n";
-        std::cout << setw(20) << std::left<< "Path"  << setw(10) << "Length" << "Cost\n";
 
+        std::cout << setw(20) << std::left<< "Path"  << setw(10) << "Length" << "Cost\n";
+        bool found_path = false;
         for (const Vertex<T>& airport : state_airport) {
             const int state_dest = get_vertex_index(airport);
             if (state_dest == -1 || distances[state_dest] == INT_MAX) continue; // Skip unreachable airports
-
+            found_path = true;
             std::vector<int> path;
             for (int at = state_dest; at != -1; at = predecessors[at]) {
                 path.insert(path.begin(), at);
@@ -260,7 +261,11 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
             //Print the path, the distance and the cost
             std::cout <<std:: left<< std::setw(20) << path_str
                 << std::setw(10) << distances[state_dest]
-                << std::setw(10) << costs[state_dest] << std::endl;}
+                << std::setw(10) << costs[state_dest] << std::endl;
+        }
+        if (!found_path) {
+            std::cout << "None\n";
+        }
     }
     clean_visited();
 
