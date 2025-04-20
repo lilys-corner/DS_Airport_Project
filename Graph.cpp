@@ -356,7 +356,8 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
 
 template <typename T>
 void Graph<T>::shortest_path_stops(const Vertex<T>& src, const Vertex<T>& dest, int stops) {
-    // path = stops + 2
+    int path_length = stops + 2;
+
     int i_src = get_vertex_index(src);
     int i_dest = get_vertex_index(dest);
 
@@ -416,9 +417,11 @@ void Graph<T>::shortest_path_stops(const Vertex<T>& src, const Vertex<T>& dest, 
                     distances[i_adjacent_ver] = dist_from_source;
                     costs[i_adjacent_ver] = new_cost;
                     predecessors[i_adjacent_ver] = i;
+                    cout << "add " << i_adjacent_ver << " to " << i << endl;
                 }
             }
         }
+
         if (heap.is_empty()) { // Check if heap is empty before deleting min
 
             break; // Exit loop gracefully
@@ -433,8 +436,12 @@ void Graph<T>::shortest_path_stops(const Vertex<T>& src, const Vertex<T>& dest, 
 
         // Increment the count of visited vertices
         vertices_visited++;
-    }
 
+        for (int at = i_dest; at != -1; at = predecessors[at]) {
+            cout << at << ", ";
+        }
+        cout << endl;
+    }
 }
 
 //implementation for prims algorithm mst
