@@ -23,6 +23,7 @@ Graph<T>::Graph(const Graph& other) {
         // Insert the current vertex
         Vertex<T> v1 = other.vertices[k];
         insert_vertex(v1);
+        int m = get_vertex_index(v1);
 
         // For each edge, execute
         for (int j = 0; j < other.edges[k].size(); j++) {
@@ -30,10 +31,37 @@ Graph<T>::Graph(const Graph& other) {
             // Insert other vertex based on the edge
             Vertex<T> v2 = other.vertices[other.edges[k][j].dest];
             insert_vertex(v2);
+            int n = get_vertex_index(v2);
 
             // Add edges for both
             add_edge(v1, v2, other.edges[k][j].weight, other.edges[k][j].cost);
             add_edge(v2, v1, other.edges[k][j].weight, other.edges[k][j].cost);
+        }
+    }
+    fix(other);
+}
+
+template <typename T>
+void Graph<T>::fix(const Graph& other) {
+    for (int k = 0; k < vertices.size(); k++) {
+        Vertex<T> v1 = vertices[k];
+        int m = get_vertex_index(v1);
+
+        for (int j = 0; j < edges[k].size(); j++) {
+            Vertex<T> v2 = vertices[edges[k][j].dest];
+            int n = get_vertex_index(v2);
+
+            for (int i = 0; i < edges[n].size(); i++) {
+                if (edges[n][i].dest == m) {
+
+                    if (!other.edges[n].empty() && (other.edges[n][i].cost < edges[k][j].cost) && other.edges[n][i].cost > 0) {
+                        edges[n][i].weight = other.edges[n][i].weight;
+                        edges[k][j].weight = other.edges[n][i].weight;
+                        edges[n][i].cost = other.edges[n][i].cost;
+                        edges[k][j].cost = other.edges[n][i].cost;
+                    }
+                }
+            }
         }
     }
 }

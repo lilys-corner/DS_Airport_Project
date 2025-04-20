@@ -9,6 +9,7 @@ class Graph {
 public:
     Graph() {}
     Graph(const Graph& other);
+    void fix(const Graph& other);
 
     void insert_vertex(const Vertex<T>& ver);
     void add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int weight, int cost); //connect ver1 with ver2
