@@ -38,6 +38,7 @@ DONE!
         Total = inbound + outbound
         Direct meaning there is only one direct edge between them
             Tampa -edge-> New York: Tampa has 1 outbound edge there, NY has one inbound
+DONE!
 
 6 (HAILEY):
     Create undirected graph G_u from G
