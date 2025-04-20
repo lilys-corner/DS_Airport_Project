@@ -267,93 +267,112 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
     return distances[i_dest];
 }
 
+// Define a struct to hold path information
+struct CurPath {
+    int length;
+    int vertex_index;
+    int edge_count;
+    std::vector<int> path;
+    int cost;
+
+    bool operator<(const CurPath& other) const {
+        return length > other.length; // Overload < for MinHeap
+    }
+};
+
 template <typename T>
 void Graph<T>::shortest_path_stops(const Vertex<T>& src, const Vertex<T>& dest, int stops) {
-    int path_length = stops + 2;
-
+    // Define the vertex indexes of the source and destination airports
     int i_src = get_vertex_index(src);
     int i_dest = get_vertex_index(dest);
 
+    // If either don't exist, do not execute
     if (i_src == -1 || i_dest == -1) {
-        throw std::string("Shortest path: incorrect vertices");
-    }
-
-    if (stops < 0) {
-        cout << "Error: There cannot be negative stops" << endl;
+        std::cout << "Error: Incorrect vertices (airports)" << std::endl;
         return;
     }
 
-    clean_visited();
-    std::vector<int> distances(vertices.size()); //represents the distances from source to all other vertices
-
-    //set initial distances: 0 for source, very high for everything else initially
-    for(int i = 0; i < distances.size(); i++) {
-        distances[i] = (i == i_src) ? 0 : INT_MAX;
+    // If stops is invalid, do not execute
+    if (stops < 0) {
+        std::cout << "Error: Stops must be positive" << std::endl;
+        return;
     }
 
-    // start at source, no visited
-    MinHeap<Edge> heap;
-    int vertices_visited = 0;
-    int cur_ver = i_src;
+    // MinHeap to track path, vertex index and edge_count
+    MinHeap<CurPath> heap;
+    heap.insert(CurPath{0, i_src, -1, {i_src}, 0}); // Exclude src with -1 stops
 
-    std::vector<int> predecessors(vertices.size(),-1);
-    std::vector<int> costs(vertices.size(),  INT_MAX);
-    costs[i_src] = 0;
+    // Set shortest length to INT_MAX (10000) until it is gone to
+    int shortest_length = INT_MAX;
 
-    while (vertices_visited < vertices.size()) {
-        // Set current vertex to cur_ver (current vertex being processed)
-        int i = cur_ver;
+    // Integer for the cost ($) set to INT_MAX
+    int shortest_cost = INT_MAX;
 
-        // Iterate through all neighbors (edges) of the current vertex
-        for (int j = 0; j < edges[i].size(); j++) {
-            // Get the destination vertex of the current edge
-            if (edges[i][j].dest == NULL)
-                continue;
+    // Stores the path with the shortest length
+    std::vector<int> shortest_path;
 
-            int i_adjacent_ver = edges[i][j].dest;
+    while (!heap.is_empty()) {
+        // Create a CurPath struct to track the current path state
+        CurPath cur_state = heap.delete_min();
 
-            // Check if the adjacent vertex has not been visited yet
-            if (vertices[i_adjacent_ver].getVisited() == false) {
-                // Insert the edge into the min-heap (for processing later in Dijkstra's algorithm)
-                heap.insert(edges[i][j]);
+        // Current instances of the struct for easier access
+        int cur = cur_state.vertex_index;
+        int cur_length = cur_state.length;
+        int cur_edge_c = cur_state.edge_count;
+        std::vector<int> cur_path = cur_state.path;
+        int cur_cost = cur_state.cost;
 
-                // disregard distance if not stops
+        // Check if shortest path if you reach the stops & destination
+        if (cur == i_dest && cur_edge_c == stops) {
+            // Using the overloaded <
+            if (cur_length < shortest_length) {
+                shortest_length = cur_length;
+                shortest_path = cur_path;
+                shortest_cost = cur_cost;
+            }
+            // Continue searching for shorter paths
+            continue;
+        }
 
-                // Calculate the new distance from the source to the adjacent vertex through the current vertex
-                int dist_from_source = distances[i] + edges[i][j].weight;
-                int new_cost = costs[i] + edges[i][j].cost;
+        // Don't exceed stop count
+        if (cur_edge_c >= stops)
+            continue;
 
-                // If this new distance is shorter than the previously known distance to the adjacent vertex, update it
-                if (dist_from_source < distances[i_adjacent_ver]) {
+        // For each edge of the vertex
+        for (const Edge& edge : edges[cur]) {
 
-                    // Update the shortest distance to the adjacent vertex
-                    distances[i_adjacent_ver] = dist_from_source;
-                    costs[i_adjacent_ver] = new_cost;
-                    predecessors[i_adjacent_ver] = i;
-                    cout << "add " << i_adjacent_ver << " to " << i << endl;
-                }
+            // Store next vertex (airport) info
+            int next_ver = edge.dest;
+            int next_length = cur_length + edge.weight;
+            int next_cost = cur_cost + edge.cost;
+
+            // Prevent repetition potential errors
+            if (find(cur_path.begin(), cur_path.end(), next_ver) == cur_path.end()) {
+                // Create a vector next_path, insert the next vertex
+                std::vector<int> next_path = cur_path;
+                next_path.push_back(next_ver);
+
+                // Insert the struct into the heap
+                heap.insert(CurPath{next_length, next_ver, cur_edge_c + 1, next_path, next_cost});
             }
         }
+    }
 
-        if (heap.is_empty()) { // Check if heap is empty before deleting min
+    // Output after the heap is empty
+    std::cout << "Shortest route from " << src.getData() << " to " << dest.getData() <<
+        " with " << stops << " stops: ";
 
-            break; // Exit loop gracefully
-        }
-        // After exploring all neighbors, get the edge with the smallest weight from the heap
-        Edge e = heap.delete_min();
+    // If no shortest path with correct stops and destination has been found, no results
+    if (shortest_length == INT_MAX) {
+        std::cout << "None" << std::endl;
+    }
 
-        cur_ver = e.dest;
+    // Else, there are results to output
+    else {
+        for (int cur_index : shortest_path)
+            std::cout << vertices[cur_index].getData() << " -> ";
 
-        // Mark the current vertex as visited
-        vertices[i].setVisited(true);
-
-        // Increment the count of visited vertices
-        vertices_visited++;
-
-        for (int at = i_dest; at != -1; at = predecessors[at]) {
-            cout << at << ", ";
-        }
-        cout << endl;
+        std::cout << "\b\b\b\b. The length is " << shortest_length <<". The cost is $" << shortest_cost << "." << std::endl;
     }
 }
 

@@ -127,13 +127,13 @@ int main() {
     // Prints the shortest path from an origin airport to state airports
     G.dijkstra_shortest_path(start, end,state_airports, stateName, 2);
 
-    //G.shortest_path_stop(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"), 3);
-
+    G.shortest_path_stops(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"), 3);
+    G.shortest_path_stops(G.airport_to_vector("PIT"), G.airport_to_vector("ACT"), 2);
 
     G.count_direct_flights();
 
-    //Graph<string> G_u = Graph(G);
-    //G_u.print();
+    Graph<string> G_u = Graph(G);
+    G_u.print();
 
     //apply algorithms to the unsorted G_u and displays the entire mst
 

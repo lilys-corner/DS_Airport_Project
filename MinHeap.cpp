@@ -91,8 +91,3 @@ int MinHeap<T>::min_index(int i1, int i2) const {
 
     return (data[i1] < data[i2] ? i1 : i2);
 }
-
-// MinHeap(std::vector<T> v); {
-//     //insert the elements in the given order
-//     //heapify
-// }
