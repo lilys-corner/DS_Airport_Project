@@ -3,8 +3,6 @@
 #include "Graph.h"
 #include "Vertex.h"
 #include "Graph.cpp"
-
-#include <cstring>
 using namespace std;
 
 // Open in.txt file to read from
@@ -110,9 +108,6 @@ int main() {
         Vertex<string> v1(origin_airport, origin_city);
         Vertex<string> v2(destination_airport, destination_city);
 
-        /*
-        cout << "line! " << i << endl;
-        i++;*/
         G.insert_vertex(v1);
 
         G.insert_vertex(v2);
@@ -122,21 +117,15 @@ int main() {
 
     //G.print();
 
-    Vertex<string> start (G.airport_to_vector("ACT"));
+    Vertex<string> start (G.airport_to_vector("ATL"));
     Vertex<string> end(G.airport_to_vector("MIA"));
-    string stateName = "TX";
+    string stateName = "FL";
     vector<Vertex<string>> state_airports = (G.state_to_vector(stateName));
-    //for (auto i : state_airports)
-     //   cout << i.getData() << " ";
 
-
-    //cout << G.dijkstra_shortest_path(start, end);
+    // Prints the shortest path between two airports
     G.dijkstra_shortest_path(start, end, state_airports, stateName, 1);
+    // Prints the shortest path from an origin airport to state airports
     G.dijkstra_shortest_path(start, end,state_airports, stateName, 2);
-    /*for (const Vertex<std::string>& airport : state_airports) {
-        G.dijkstra_shortest_path(start, airport,state_airports, 2); // Use mode 2
-        std::cout << "\n"; // Separate output between paths
-    }*/
 
     //G.shortest_path_stop(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"), 3);
 

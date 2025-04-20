@@ -20,7 +20,8 @@ public:
 
     void print() const;
 
-    void DFS(Vertex<T>& ver);
+    //Finds the shortest path either from one airport to another,
+    // or from an airport to the destination state airports
     int dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest, const std::vector<Vertex<T>>& state_airport, const std::string& stateName, const int& print_mode);
 
     void shortest_path_stops(const Vertex<T>& src, const Vertex<T>& dest, int stops);
@@ -37,7 +38,6 @@ private:
 
     void clean_visited();
 
-    void DFS_helper(Vertex<T>& ver);
     int get_vertex_index(const Vertex<T>& ver);
 };
 

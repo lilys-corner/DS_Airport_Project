@@ -4,8 +4,7 @@
 #include "Edge.h"
 #include "Vertex.h"
 #include <vector>
-#include <queue>
-#include <iomanip> //ill ask about it in class
+#include <iomanip>
 #include <string>
 #include <algorithm>
 using namespace std;
@@ -66,8 +65,6 @@ void Graph<T>::fix(const Graph& other) {
     }
 }
 
- //So like i can run my thingie
-// yee no problem
 template <typename T>
 void Graph<T>::insert_vertex(const Vertex<T>& ver) {
     if (get_vertex_index(ver) == -1) {
@@ -77,27 +74,29 @@ void Graph<T>::insert_vertex(const Vertex<T>& ver) {
     }
 }
 
+// Takes an airport name and finds the vertex that matches
 template <typename T>
 Vertex<T> Graph<T> :: airport_to_vector(const T& airportName) {
     for (const Vertex<T>& vertex : vertices) {
         if (vertex.getData() == airportName) {
             // Match airport name
-           // std::cout << "Found vertex!" << std::endl;
             return vertex;
         }
     }
+    throw std::string("Airport not found in graph");
 }
+
+// Takes a state initial and finds airports that are in the state
 template <typename T>
 vector<Vertex<T>> Graph<T> :: state_to_vector(const T& stateName) {
     vector<Vertex<T>> airports_of_state;
     for (const Vertex<T>& vertex : vertices){
         if (vertex.getState() == stateName) {
-            // Match airport name
+            // Add the airport if the state name matches
             airports_of_state.push_back(vertex);
-            //std::cout << "Added in " << vertex.getData() << std::endl;
-            //return vertex;
         }
     }
+    // Return a vector of the airports in the destination state
     return airports_of_state;
 }
 
@@ -113,7 +112,6 @@ int Graph<T>::get_vertex_index(const Vertex<T>& ver) {
             return i;
         }
     }
-
     return -1;
 }
 
@@ -127,63 +125,6 @@ void Graph<T>::add_edge(const Vertex<T>& ver1, const Vertex<T>& ver2, int weight
     Edge v(i1, i2, weight, cost);
     edges[i1].push_back(v);
 }
-/*
-template <typename T>
-void Graph<T>::primMST(int V) {
-//creates a MST using Prim's algorithm given an unsorted Graph
-    bool inMST [INT_MAX] = {false};
-    int total_weight = 0;
-
-    // priority queue (min-heap): {weight, vertex}
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-*/
-
-    /*code from class
-// adjacency list: each element is {neighbor, weight}
-vector<pair<int, int>> adj[MAX_VERTICES];
-
-void primMST(int V) {
-    bool inMST[MAX_VERTICES] = {false};
-    int total_weight = 0;
-
-    // priority queue (min-heap): {weight, vertex}
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-
-    // Start from vertex 0
-    pq.push({0, 0});
-
-    cout << "Edges in MST:\n";
-
-    while (!pq.empty()) {
-        int u = pq.top().second;
-        int wt = pq.top().first;
-        pq.pop();
-
-        // Skip if already included in MST
-        if (inMST[u])
-            continue;
-
-        inMST[u] = true;
-        total_weight += wt;
-
-        // Don't print the starting node (0) with weight 0
-        if (wt != 0)
-            cout << "Added vertex " << u << " with edge weight " << wt << endl;
-
-        // Go through all neighbors
-        for (int i = 0; i < adj[u].size(); i++) {
-            int v = adj[u][i].first;
-            int weight = adj[u][i].second;
-            if (!inMST[v])
-                pq.push({weight, v});
-        }
-    }
-
-    cout << "Total weight of MST: " << total_weight << endl;
-}
-
-     */
-//}
 
 template <typename T>
 void Graph<T>::print() const {
@@ -193,18 +134,11 @@ void Graph<T>::print() const {
             std::cout << '{' << vertices[edges[i][j].dest].getData() << ", ";
             //std::cout << vertices[edges[i][j].dest].getState() << ", ";
             //std::cout << edges[i][j].weight << ", ";
-            //std::cout << edges[i][j].cost << "} ";
-            std::cout << edges[i][j].weight << "} ";
+            std::cout << edges[i][j].cost << "} ";
+            //std::cout << edges[i][j].weight << "} ";
         }
         std::cout << " }\n";
     }
-}
-
-template <typename T>
-void Graph<T>::DFS(Vertex<T>& ver) {
-    clean_visited();
-    DFS_helper(ver);
-    clean_visited();
 }
 
 template <typename T>
@@ -214,22 +148,8 @@ void Graph<T>::clean_visited() {
     }
 }
 
-template <typename T>
-void Graph<T>::DFS_helper(Vertex<T>& ver) {
-    int i = get_vertex_index(ver);
-    if (i == -1) {
-        throw std::string("DFS: Vertex is not in the graph");
-    }
-    vertices[i].setVisited(true); //visit the current vertex
-    std::cout << vertices[i].getData() << ' '; //print the data of the current vertex
-    for(int j = 0; j < edges[i].size(); j++) {
-        Vertex<int> adjacent_ver = vertices[edges[i][j].dest];
-        if (adjacent_ver.getVisited() == false) {
-            DFS_helper(adjacent_ver);
-        }
-    }
-}
-
+//Finds and prints the shortest path between two airports
+// Or finds the shortest paths that are between an origin airport and the airports in a destination state
 template<typename T>
 int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest, const vector<Vertex<T>>& state_airport, const std::string& stateName, const int& print_mode) {
     int i_src = get_vertex_index(src);
@@ -254,7 +174,7 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
     std::vector<int> predecessors(vertices.size(),-1);
     std::vector<int> costs(vertices.size(),  INT_MAX);
     costs[i_src] =0;
-    //cout << vertices.size() << " " << distances.size() << endl;
+
     // Continue until all vertices have been visited
     while (vertices_visited < vertices.size()) {
         // Set current vertex to cur_ver (current vertex being processed)
@@ -273,7 +193,7 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
                 // Insert the edge into the min-heap (for processing later in Dijkstra's algorithm)
                 heap.insert(edges[i][j]);
 
-                // Calculate the new distance from the source to the adjacent vertex through the current vertex
+                // Calculate the new distance and cost from the source to the adjacent vertex through the current vertex
                 int dist_from_source = distances[i] + edges[i][j].weight;
                 int new_cost = costs[i] + edges[i][j].cost;
                 // If this new distance is shorter than the previously known distance to the adjacent vertex, update it
@@ -282,24 +202,18 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
                     distances[i_adjacent_ver] = dist_from_source;
                     costs[i_adjacent_ver] = new_cost;
                     predecessors[i_adjacent_ver] = i;
-                    // Optional debugging: print all the distances at each step to track the changes
-                    /*for (int i : distances) {
-                        std::cout << i << ' ';
-                    }
-                    std::cout << '\n';*/
                 }
             }
         }
         if (heap.is_empty()) { // Check if heap is empty before deleting min
 
-            break; // Exit loop gracefully
+            break; // Exit
         }
         // After exploring all neighbors, get the edge with the smallest weight from the heap
         Edge e = heap.delete_min();
-        /* std::cout << "Processing edge: " << vertices[e.src].getData() << " -> "
-              << vertices[e.dest].getData() << " (Weight: " << e.weight << ")" << std::endl;
+
         // Update the current vertex to the destination of the edge with the smallest weight
-        */cur_ver = e.dest;
+        cur_ver = e.dest;
 
         // Mark the current vertex as visited
         vertices[i].setVisited(true);
@@ -307,6 +221,7 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
         // Increment the count of visited vertices
         vertices_visited++;
     }
+    // Print the shortest path
     if (print_mode == 1) {
         std::cout << "Shortest route from " << src.getData() <<" -> " <<dest.getData()  << ": ";
         if (distances[i_dest] == INT_MAX) {
@@ -317,37 +232,35 @@ int Graph<T>::dijkstra_shortest_path(const Vertex<T>& src, const Vertex<T>& dest
         for (int at = i_dest; at != -1; at = predecessors[at]) {
             path.insert(path.begin(), at);
         }
-        //std::cout<<"Shortest Path Cost: " << costs[i_dest] << std::endl;
-        //std::cout << "Shortest Path: ";
         for (int v : path) {
             std::cout << vertices[v].getData() << " -> ";
         }
         std::cout << "\b\b\b\b. The length is " << distances[i_dest] <<". The cost is " << costs[i_dest] << ".\n";
     }
+    //Print shortest path to all the destination state's airports
     else if (print_mode == 2) {
         std::cout << "Shortest paths from " << src.getData() << " to " << stateName << " state airports are:\n\n";
         std::cout << setw(20) << std::left<< "Path"  << setw(10) << "Length" << "Cost\n";
 
         for (const Vertex<T>& airport : state_airport) {
-            int i_dest = get_vertex_index(airport);
-            if (i_dest == -1 || distances[i_dest] == INT_MAX) continue; // Skip unreachable airports
+            const int state_dest = get_vertex_index(airport);
+            if (state_dest == -1 || distances[state_dest] == INT_MAX) continue; // Skip unreachable airports
 
             std::vector<int> path;
-            for (int at = i_dest; at != -1; at = predecessors[at]) {
+            for (int at = state_dest; at != -1; at = predecessors[at]) {
                 path.insert(path.begin(), at);
             }
             std::string path_str = src.getData() + " -> ";
-            //std::cout << std::setw(30) << std::left << src.getData();
             for (int i = 1; i<path.size(); i++) {
                 path_str += vertices[path[i]].getData();
                     if (i <path.size()-1) {
                         path_str+= " -> ";
                     }
             }
-
+            //Print the path, the distance and the cost
             std::cout <<std:: left<< std::setw(20) << path_str
-                << std::setw(10) << distances[i_dest]
-                      << std::setw(10) << costs[i_dest] << std::endl;}
+                << std::setw(10) << distances[state_dest]
+                << std::setw(10) << costs[state_dest] << std::endl;}
     }
     clean_visited();
 
@@ -544,6 +457,7 @@ Graph<T> Graph<T>::primMST() {
     return mst;
 }
 
+// Count all the directflights in and out of an airport
 template <typename T>
 void Graph<T>::count_direct_flights() {
     std::vector<int> inbound(vertices.size(), 0);
