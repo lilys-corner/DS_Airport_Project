@@ -508,9 +508,9 @@ void Graph<T>::count_direct_flights() {
                 std::cout << std::setw(20) << std::left << vertices[i].getData()
                           << std::setw(10) << total << std::endl;
             }
-        }
-    }
+
 }
+
 
 //takes an unsorted graph and returns either a mst or a minimum spanning forest if graph is disconnected
 template <typename T>

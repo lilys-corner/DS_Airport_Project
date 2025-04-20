@@ -117,23 +117,20 @@ int main() {
 
     //G.print();
 
-    //Vertex<string> start (G.airport_to_vector("MCO"));
-    //Vertex<string> end(G.airport_to_vector("MIA"));
-    string stateName = "FL";
-    vector<Vertex<string>> state_airports = (G.state_to_vector(stateName));
-
     // Prints the shortest path between two airports
     //G.dijkstra_shortest_path(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"), G.state_to_vector("FL"), "FL", 1);
     //G.dijkstra_shortest_path(G.airport_to_vector("SPS"), G.airport_to_vector("MIA"), G.state_to_vector("FL"), "FL", 1);
     //G.dijkstra_shortest_path(G.airport_to_vector("TYS"), G.airport_to_vector("SPS"), G.state_to_vector("FL"), "FL", 1);
+
     // Prints the shortest path from an origin airport to state airports
     //G.dijkstra_shortest_path(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"),G.state_to_vector("FL"), "FL", 2);
     //G.dijkstra_shortest_path(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"),G.state_to_vector("TX"), "TX", 2);
-    G.dijkstra_shortest_path(G.airport_to_vector("RFD"), G.airport_to_vector("MIA"),G.state_to_vector("VA"),"VA", 2);
+    //G.dijkstra_shortest_path(G.airport_to_vector("RFD"), G.airport_to_vector("MIA"),G.state_to_vector("VA"),"VA", 2);
 
     //G.shortest_path_stops(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"), 3);
     //G.shortest_path_stops(G.airport_to_vector("PIT"), G.airport_to_vector("ACT"), 2);
 
+    // Prints all connecting flights to each airport
     //G.count_direct_flights();
 
     //Graph<string> G_u = Graph(G);
