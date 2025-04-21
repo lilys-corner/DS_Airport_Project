@@ -508,7 +508,8 @@ void Graph<T>::count_direct_flights() {
                 std::cout << std::setw(20) << std::left << vertices[i].getData()
                           << std::setw(10) << total << std::endl;
             }
-
+        }
+    }
 }
 
 
