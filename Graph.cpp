@@ -135,7 +135,6 @@ void Graph<T>::print() const {
             //std::cout << vertices[edges[i][j].dest].getState() << ", ";
             //std::cout << edges[i][j].weight << ", ";
             std::cout << edges[i][j].cost << "} ";
-            //std::cout << edges[i][j].weight << "} ";
         }
         std::cout << " }\n";
     }
