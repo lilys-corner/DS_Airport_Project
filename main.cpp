@@ -115,7 +115,7 @@ int main() {
         G.add_edge(v1, v2, stoi(distance), stoi(cost));
     }
 
-    //G.print();
+    G.print();
 
     // Prints the shortest path between two airports
     G.dijkstra_shortest_path(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"), G.state_to_vector("FL"), "FL", 1);
@@ -127,14 +127,14 @@ int main() {
     G.dijkstra_shortest_path(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"),G.state_to_vector("TX"), "TX", 2);
     G.dijkstra_shortest_path(G.airport_to_vector("RFD"), G.airport_to_vector("MIA"),G.state_to_vector("VA"),"VA", 2);
 
-    //G.shortest_path_stops(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"), 3);
-    //G.shortest_path_stops(G.airport_to_vector("PIT"), G.airport_to_vector("ACT"), 2);
+    G.shortest_path_stops(G.airport_to_vector("IAD"), G.airport_to_vector("MIA"), 3);
+    G.shortest_path_stops(G.airport_to_vector("PIT"), G.airport_to_vector("ACT"), 2);
 
     // Prints all connecting flights to each airport
     G.count_direct_flights();
 
-    //Graph<string> G_u = Graph(G);
-    //G_u.print();
+    Graph<string> G_u = Graph(G);
+    G_u.print();
 
     //apply algorithms to the unsorted G_u and displays the entire mst
 
