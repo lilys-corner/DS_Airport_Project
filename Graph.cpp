@@ -132,8 +132,7 @@ void Graph<T>::print() const {
         std::cout << "{ " << vertices[i].getData() << ": ";
         for(int j = 0; j < edges[i].size(); j++) {
             std::cout << '{' << vertices[edges[i][j].dest].getData() << ", ";
-            //std::cout << vertices[edges[i][j].dest].getState() << ", ";
-            //std::cout << edges[i][j].weight << ", ";
+            std::cout << edges[i][j].weight << ", ";
             std::cout << edges[i][j].cost << "} ";
         }
         std::cout << " }\n";
